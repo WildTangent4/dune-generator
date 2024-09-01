@@ -43,7 +43,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 
 	
 	# Commit to a mesh.
-	st.generate_normals()
+	#st.generate_normals()
 	st.generate_tangents()
 	mesh = st.commit()
 	
