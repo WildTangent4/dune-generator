@@ -1,3 +1,4 @@
+@tool
 extends MeshInstance3D
 
 
@@ -13,14 +14,36 @@ func _process(delta: float) -> void:
 	
 func init_mesh():
 	var vertices = PackedVector3Array()
-	vertices.push_back(Vector3(0, 1, 0))
-	vertices.push_back(Vector3(1, 0, 0))
-	vertices.push_back(Vector3(0, 0, 1))
+	create_base_mesh(2,2,vertices,0)
 
-	# Initialize the ArrayMesh.
-	var arrays = []
-	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = vertices
+#add x * z points to a packed vector 3 array to make a flat plane
+func create_base_mesh(x_max,z_max,array,y_coordinate=0):
+	var st = SurfaceTool.new()
 
-	# Create the Mesh.
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	st.begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
+
+	#create a quad from two tris
+
+	#create top right triangle
+
+	#The triangle strip primitive connects the next point to the previous two vertecies to form a triangle
+	#therefore to create one line of squares you need to make a series of vertical lines, these will be connected by the diagnoal lines |\|\|\|\|\|
+
+	for i in 10:
+		#create straight edge
+		st.set_normal(Vector3(0, 0, 1))
+		st.set_uv(Vector2(0, 0))
+		st.add_vertex(Vector3(0, 0, i))
+
+		st.set_normal(Vector3(0, 0, 1))
+		st.set_uv(Vector2(0, 1))
+		st.add_vertex(Vector3(0, 1, i))
+
+		
+
+	
+	# Commit to a mesh.
+	st.generate_normals()
+	st.generate_tangents()
+	mesh = st.commit()
+	
