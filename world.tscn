@@ -1,0 +1,29 @@
+[gd_scene load_steps=7 format=3 uid="uid://by5fsqbhx8m1a"]
+
+[ext_resource type="Script" path="res://generate_dunes.gd" id="1_ko3wh"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_sxil5"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_55mpg"]
+
+[sub_resource type="Sky" id="Sky_hg8tb"]
+sky_material = SubResource("ProceduralSkyMaterial_55mpg")
+
+[sub_resource type="Environment" id="Environment_2eavm"]
+background_mode = 2
+sky = SubResource("Sky_hg8tb")
+ambient_light_color = Color(0.991164, 0.991164, 0.991164, 1)
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_sigm6"]
+
+[node name="terrain" type="MeshInstance3D"]
+mesh = SubResource("ArrayMesh_sxil5")
+script = ExtResource("1_ko3wh")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.451964, 0.352163, 0.819579, -0.278469, 0.928558, -0.245427, -0.847457, -0.117303, 0.517741, 1.5466, -0.6139, 1.21472)
+current = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_2eavm")
+camera_attributes = SubResource("CameraAttributesPractical_sigm6")
