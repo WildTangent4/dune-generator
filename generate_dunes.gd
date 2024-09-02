@@ -24,12 +24,13 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	cellular_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH #(just curious about outputs)
 	cellular_noise.seed = 1
 	cellular_noise.frequency = 0.05
-	cellular_noise.fractal_octaves = 2
+	cellular_noise.fractal_octaves = 1
 	cellular_noise.fractal_gain = 1
 	print(cellular_noise.get_noise_2d(1,1))
 	var pipeline = [
 		func (pos): return apply_vertical_shift(pos,-1),#hardcode values here to customise the pipeline
-		func (pos): return apply_noise(pos,cellular_noise)
+		func (pos): return apply_noise(pos,cellular_noise,2),
+		func (pos): return apply_sin(pos,1,0.005)
 		]
 	
 	#The triangle strip primitive connects the next point to the previous two vertecies to form a triangle
@@ -52,14 +53,18 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 
 #add the amplitude of a sin wave to the y height of the current coorindate, multiplied by amplitude, accounting for the angle of the wave
 func apply_sin(grid_pos, wave_amplitude = 1 , wave_frequency = 1, wave_angle = 0) -> Vector3:
-	return Vector3.INF
+	return Vector3(
+		grid_pos.x,
+		grid_pos.y+sin(grid_pos.x),
+		grid_pos.z
+		)
 
 #add the intensity of perlin noise at coordinate x,z to the y height of the given grid pos
-func apply_noise(grid_pos,noise) -> Vector3:
+func apply_noise(grid_pos,noise, amplitude = 1) -> Vector3:
 	#print(noise.get_noise_2d(grid_pos.x,grid_pos.z))
 	return Vector3(
 		grid_pos.x,
-		grid_pos.y+noise.get_noise_2d(grid_pos.x,grid_pos.z),
+		grid_pos.y+(noise.get_noise_2d(grid_pos.x,grid_pos.z) * amplitude),
 		grid_pos.z
 		)
 
