@@ -29,17 +29,16 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 
 	#The triangle strip primitive connects the next point to the previous two vertecies to form a triangle
 	#therefore to create one line of squares you need to make a series of vertical lines, these will be connected by the diagnoal lines |\|\|\|\|\|
-	var y_max = z_max
-	for y in y_max:
+	for z in z_max:
 		for x in x_max:
 		#create straight edge
 			st.set_normal(Vector3(0, 0, 1))
 			st.set_uv(Vector2(0, 0))
-			st.add_vertex(Vector3(0, y, x))
+			st.add_vertex(Vector3(x, 0, z+1))
 
 			st.set_normal(Vector3(0, 0, 1))
 			st.set_uv(Vector2(0, 1))
-			st.add_vertex(Vector3(0, y+1, x))
+			st.add_vertex(Vector3(x, 0, z))
 
 	
 	# Commit to a mesh.

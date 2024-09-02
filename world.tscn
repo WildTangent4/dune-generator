@@ -1,8 +1,17 @@
-[gd_scene load_steps=7 format=3 uid="uid://by5fsqbhx8m1a"]
+[gd_scene load_steps=7 format=4 uid="uid://by5fsqbhx8m1a"]
 
 [ext_resource type="Script" path="res://generate_dunes.gd" id="1_ko3wh"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_jp13v"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_m6v1u"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 3, 1e-05, 1),
+"attribute_data": PackedByteArray("AAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAACAPw=="),
+"format": 34359738391,
+"primitive": 4,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAIA/AAAAQAAAAAAAAAAAAAAAQAAAAAAAAIA/AABAQAAAAAAAAAAAAABAQAAAAAAAAIA//3//f////z//f/9/////P/9//3////8//3//f////z//f/9/////P/9//3////8//3//fwAAAID/f/9/AAAAgA==")
+}]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_55mpg"]
 
@@ -17,7 +26,7 @@ ambient_light_color = Color(1, 0.992157, 0.992157, 1)
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_sigm6"]
 
 [node name="terrain" type="MeshInstance3D"]
-mesh = SubResource("ArrayMesh_jp13v")
+mesh = SubResource("ArrayMesh_m6v1u")
 script = ExtResource("1_ko3wh")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
