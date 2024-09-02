@@ -14,7 +14,7 @@ func _process(delta: float) -> void:
 func init_mesh():
 	
 	var vertices = PackedVector3Array()
-	create_base_mesh(100,100,vertices,0)
+	create_base_mesh(3,2,vertices,0)
 
 #add x * z points to a packed vector 3 array to make a flat plane
 func create_base_mesh(x_max,z_max,array,y_coordinate=0):
@@ -22,9 +22,9 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	#var noise = FastNoiseLite.new()
 	#noise.noise_type = FastNoiseLite.TYPE_CELLULAR #(just curious about outputs)
 	#noise.seed = 1
-	#var pipeline = [
-		#func (pos): apply_vertical_shift(pos,1),
-		#]
+	var pipeline = [
+		func (pos): return apply_vertical_shift(pos,-1)
+		]
 	
 	#The triangle strip primitive connects the next point to the previous two vertecies to form a triangle
 	#therefore to create one line of squares you need to make a series of vertical lines, these will be connected by the diagonal lines |\|\|\|\|\|
@@ -35,11 +35,11 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 		for x in x_max:
 			st.set_normal(Vector3(0, 0, 1))
 			st.set_uv(Vector2(0, 0))
-			st.add_vertex(Vector3(x, 0, z+1))
+			st.add_vertex(run_pipeline(Vector3(x, 0, z+1),pipeline))
 
 			st.set_normal(Vector3(0, 0, 1))
 			st.set_uv(Vector2(0, 1))
-			st.add_vertex(Vector3(x, 0, z))
+			st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
 	# Commit changes to a mesh.
 	st.generate_tangents()
 	mesh = st.commit()
@@ -53,9 +53,11 @@ func apply_perlin_noise(grid_pos,seed) -> Vector3:
 	return Vector3.INF
 
 #apply a constant vertical shift to the y coordinate of the given point
-func apply_vertical_shift(grid_pos, shift = 0) -> Vector3:
+func apply_vertical_shift(grid_pos, shift = 1) -> Vector3:
 	return Vector3(grid_pos.x,grid_pos.y+shift,grid_pos.z)
 	
 #run all of the functions in the pipleine on the specified coordinate and return the coordinate with the updated y value
+#ALL FUNCTIONS MUST TAKE POSITION AS FIRST VALUE
 func run_pipeline(coordinate,pipeline = []) -> Vector3:
-	return Vector3.INF
+	return pipeline[0].call(coordinate)
+	
