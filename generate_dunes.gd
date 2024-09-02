@@ -28,9 +28,9 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	cellular_noise.fractal_gain = 1
 	print(cellular_noise.get_noise_2d(1,1))
 	var pipeline = [
-		func (pos): return apply_vertical_shift(pos,-1),#hardcode values here to customise the pipeline
-		func (pos): return apply_noise(pos,cellular_noise,2),
-		func (pos): return apply_sin(pos,1,0.005)
+		#func (pos): return apply_vertical_shift(pos,-1),#hardcode values here to customise the pipeline
+		#func (pos): return apply_noise(pos,cellular_noise,2),
+		func (pos): return apply_sin(pos,3,0.1)
 		]
 	
 	#The triangle strip primitive connects the next point to the previous two vertecies to form a triangle
@@ -55,7 +55,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 func apply_sin(grid_pos, wave_amplitude = 1 , wave_frequency = 1, wave_angle = 0) -> Vector3:
 	return Vector3(
 		grid_pos.x,
-		grid_pos.y+sin(grid_pos.x),
+		grid_pos.y+(sin(grid_pos.x*wave_frequency)*wave_amplitude),
 		grid_pos.z
 		)
 
