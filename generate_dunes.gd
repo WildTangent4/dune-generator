@@ -14,16 +14,22 @@ func _process(delta: float) -> void:
 func init_mesh():
 	
 	var vertices = PackedVector3Array()
-	create_base_mesh(3,2,vertices,0)
+	create_base_mesh(100,100,vertices,0)
 
 #add x * z points to a packed vector 3 array to make a flat plane
 func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	x_max = x_max+1 # need to create one more edge than the requested number of squares to ensure the final sqaure is complete
-	#var noise = FastNoiseLite.new()
-	#noise.noise_type = FastNoiseLite.TYPE_CELLULAR #(just curious about outputs)
-	#noise.seed = 1
+	
+	var cellular_noise = FastNoiseLite.new()
+	cellular_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH #(just curious about outputs)
+	cellular_noise.seed = 1
+	cellular_noise.frequency = 0.05
+	cellular_noise.fractal_octaves = 2
+	cellular_noise.fractal_gain = 1
+	print(cellular_noise.get_noise_2d(1,1))
 	var pipeline = [
-		func (pos): return apply_vertical_shift(pos,-1)
+		func (pos): return apply_vertical_shift(pos,-1),#hardcode values here to customise the pipeline
+		func (pos): return apply_noise(pos,cellular_noise)
 		]
 	
 	#The triangle strip primitive connects the next point to the previous two vertecies to form a triangle
@@ -49,15 +55,26 @@ func apply_sin(grid_pos, wave_amplitude = 1 , wave_frequency = 1, wave_angle = 0
 	return Vector3.INF
 
 #add the intensity of perlin noise at coordinate x,z to the y height of the given grid pos
-func apply_perlin_noise(grid_pos,seed) -> Vector3:
-	return Vector3.INF
+func apply_noise(grid_pos,noise) -> Vector3:
+	#print(noise.get_noise_2d(grid_pos.x,grid_pos.z))
+	return Vector3(
+		grid_pos.x,
+		grid_pos.y+noise.get_noise_2d(grid_pos.x,grid_pos.z),
+		grid_pos.z
+		)
 
 #apply a constant vertical shift to the y coordinate of the given point
 func apply_vertical_shift(grid_pos, shift = 1) -> Vector3:
-	return Vector3(grid_pos.x,grid_pos.y+shift,grid_pos.z)
+	return Vector3(
+		grid_pos.x,
+		grid_pos.y+shift,
+		grid_pos.z
+		)
 	
 #run all of the functions in the pipleine on the specified coordinate and return the coordinate with the updated y value
 #ALL FUNCTIONS MUST TAKE POSITION AS FIRST VALUE
 func run_pipeline(coordinate,pipeline = []) -> Vector3:
-	return pipeline[0].call(coordinate)
+	for functor in pipeline:
+		coordinate = functor.call(coordinate)
+	return coordinate #warning no error handling if returns nil
 	
