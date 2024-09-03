@@ -32,6 +32,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 		func (pos): return apply_sin(pos,4,0.1,0),
 		func (pos): return apply_sin(pos,0.2,0.6,63),
 		func (pos): return apply_sin(pos,0.1,1,35),
+		func (pos): return apply_clamp(pos,-3,0.9),
 		]
 	
 	
@@ -100,13 +101,23 @@ func apply_vertical_shift(grid_pos, shift = 1) -> Vector3:
 		grid_pos.y+shift,
 		grid_pos.z
 		)
-	
+
 #run all of the functions in the pipleine on the specified coordinate and return the coordinate with the updated y value
 #ALL FUNCTIONS MUST TAKE POSITION AS FIRST VALUE
 func run_pipeline(coordinate,pipeline = []) -> Vector3:
 	for functor in pipeline:
 		coordinate = functor.call(coordinate)
 	return coordinate #warning no error handling if returns nil
+
+# moves positions below the threshold value towards the value, proportional to distance from the desired height
+func apply_clamp(grid_pos, threshold, clamping_force):
+	if grid_pos.y<threshold:
+		grid_pos = Vector3(
+		grid_pos.x,
+		grid_pos.y+ ((threshold-grid_pos.y)*clamping_force),
+		grid_pos.z
+		)
+	return grid_pos
 	
 #for rotated waves, apply a rotation to the x coordinate that is being calculated for
 func calculate_angular_shift(x_pos,roation_deg):
