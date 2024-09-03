@@ -14,7 +14,7 @@ func _process(delta: float) -> void:
 func init_mesh():
 	
 	var vertices = PackedVector3Array()
-	create_base_mesh(500,500,vertices,0)
+	create_base_mesh(100,100,vertices,0)
 
 #add x * z points to a packed vector 3 array to make a flat plane
 func create_base_mesh(x_max,z_max,array,y_coordinate=0):
@@ -47,8 +47,8 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 		func (pos): return apply_sin(pos,1,0.3,20),
 		func (pos): return apply_sin(pos,0.2,0.6,63), #Smaller sin waves with high frequencies give the appearance of water
 		func (pos): return apply_sin(pos,0.1,1,35),
-		func (pos): return apply_noise_based_clamp(pos,-5,dune_noise_map),
-		func (pos): return apply_noise(pos,dune_noise_map,20),
+		func (pos): return apply_noise_based_clamp(pos,-2,dune_noise_map),
+		#func (pos): return apply_noise(pos,dune_noise_map,20),
 		func (pos): return apply_clamp(pos,-6,0.8),
 		]
 	
@@ -64,6 +64,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	var alternate_alignment = false
 	for z in z_max:
 		if !alternate_alignment:
+			
 			for x in range(x_max,-1,-1): #in the range() function, first parameter is inclusive and the second is exclusive, so we use -1 to get the correct range
 				
 				next_point = run_pipeline(Vector3(x, 0, z),pipeline)
@@ -81,8 +82,10 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 				last_point = current_point
 				current_point = next_point
 		else:
-			for x in range(0,x_max,1):
+			
+			for x in range(0,x_max+1,1):
 				#note, this has to be done this way to ensure that the generated triangles face upwards by forcing a clockwise winding order
+				
 				next_point = run_pipeline(Vector3(x, 0, z+1),pipeline)
 				st.set_normal(get_triangle_normal(next_point,current_point,last_point))
 				st.set_uv(Vector2(0, 0))
