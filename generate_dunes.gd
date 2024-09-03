@@ -28,7 +28,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	var pipeline = [
 		#func (pos): return apply_vertical_shift(pos,-1),#hardcode values here to customise the pipeline
 		#func (pos): return apply_noise(pos,cellular_noise,2),
-		func (pos): return apply_sin(pos,1,0.5,45)
+		func (pos): return apply_sin(pos,10,0.05,45)
 		]
 	
 	
@@ -73,9 +73,10 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	
 #add the amplitude of a sin wave to the y height of the current coorindate, multiplied by amplitude, accounting for the angle of the wave
 func apply_sin(grid_pos, wave_amplitude = 1 , wave_frequency = 1, wave_angle = 45) -> Vector3:
+	var shift = calculate_angular_shift(grid_pos.z,wave_angle)
 	return Vector3(
 		grid_pos.x,
-		grid_pos.y+((sin(grid_pos.x) * wave_frequency) * wave_amplitude),
+		grid_pos.y+(sin((grid_pos.x + shift) * wave_frequency) * wave_amplitude),
 		grid_pos.z
 		)
 
