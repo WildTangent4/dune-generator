@@ -14,7 +14,7 @@ func _process(delta: float) -> void:
 func init_mesh():
 	
 	var vertices = PackedVector3Array()
-	create_base_mesh(100,100,vertices,0)
+	create_base_mesh(500,500,vertices,0)
 
 #add x * z points to a packed vector 3 array to make a flat plane
 func create_base_mesh(x_max,z_max,array,y_coordinate=0):
@@ -36,18 +36,20 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	biome_noise_map.noise_type = FastNoiseLite.TYPE_CELLULAR
 	biome_noise_map.seed = 2
 	biome_noise_map.frequency = 0.01
-	biome_noise_map.fractal_octaves = 3
+	biome_noise_map.fractal_octaves = 4
 	biome_noise_map.fractal_gain = 1
 	var pipeline = [
 		func (pos): return apply_vertical_shift(pos,8),
-		func (pos): return apply_noise(pos,biome_noise_map,20),
-		func (pos): return apply_sin(pos,1,0.2,45),
-		func (pos): return apply_sin(pos,1,0.3,20),
+		func (pos): return apply_sin(pos,10,0.01,80),
 		func (pos): return apply_sin(pos,4,0.1,0),
 		func (pos): return apply_sin(pos,4,0.1,30),
+		func (pos): return apply_sin(pos,1,0.2,45),
+		func (pos): return apply_sin(pos,1,0.3,20),
 		func (pos): return apply_sin(pos,0.2,0.6,63), #Smaller sin waves with high frequencies give the appearance of water
 		func (pos): return apply_sin(pos,0.1,1,35),
-		func (pos): return apply_clamp(pos,0,0.8),
+		func (pos): return apply_noise_based_clamp(pos,-5,dune_noise_map),
+		func (pos): return apply_noise(pos,dune_noise_map,20),
+		func (pos): return apply_clamp(pos,-6,0.8),
 		]
 	
 	
@@ -88,18 +90,16 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 				last_point = current_point
 				current_point = next_point
 
-				
 				next_point = run_pipeline(Vector3(x, 0, z),pipeline)
 				st.set_normal(get_triangle_normal(next_point,current_point,last_point,true))#last_point,current_point,next_point
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(next_point)
 				last_point = current_point
 				current_point = next_point
-				
-				
-				
 		alternate_alignment=!alternate_alignment
+		
 	# Commit changes to a mesh.
+	
 	st.generate_tangents()
 	mesh = st.commit()
 	
