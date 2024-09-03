@@ -56,39 +56,64 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
-	
+	var next_point
+	var current_point = Vector3(0, 0, 0)
+	var last_point = Vector3(0, 0, 0)
+	var alternate_alignment = false
 	for z in z_max:
-		if z%2==0:
+		if !alternate_alignment:
 			for x in range(x_max,-1,-1): #in the range() function, first parameter is inclusive and the second is exclusive, so we use -1 to get the correct range
-				st.set_normal(Vector3(0, 0, 1))
-				st.set_uv(Vector2(0, 0))
-				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
 				
-				st.set_normal(Vector3(0, 0, 1))
-				st.set_uv(Vector2(0, 1))
-				st.add_vertex(run_pipeline(Vector3(x, 0, z+1),pipeline))
+				next_point = run_pipeline(Vector3(x, 0, z),pipeline)
+				st.set_normal(get_triangle_normal(last_point,current_point,next_point,true))
+				st.set_uv(Vector2(0, 0))
+				st.add_vertex(next_point)
+				last_point = current_point
+				current_point = next_point
+				
+				
+				next_point = run_pipeline(Vector3(x, 0, z+1),pipeline)
+				st.set_normal(get_triangle_normal(last_point,current_point,next_point))
+				st.set_uv(Vector2(0, 0))
+				st.add_vertex(next_point)
+				last_point = current_point
+				current_point = next_point
 		else:
 			for x in range(0,x_max,1):
 				#note, this has to be done this way to ensure that the generated triangles face upwards by forcing a clockwise winding order
-				st.set_normal(Vector3(0, 0, 1))
+				next_point = run_pipeline(Vector3(x, 0, z),pipeline)
+				st.set_normal(get_triangle_normal(last_point,current_point,next_point))
 				st.set_uv(Vector2(0, 0))
-				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
+				st.add_vertex(next_point)
+				last_point = current_point
+				current_point = next_point
 
-				st.set_normal(Vector3(0, 0, 1))
-				st.set_uv(Vector2(0, 1))
-				st.add_vertex(run_pipeline(Vector3(x+1, 0, z),pipeline))
 				
-				st.set_normal(Vector3(0, 0, 1))
+				next_point = run_pipeline(Vector3(x+1, 0, z),pipeline)
+				st.set_normal(get_triangle_normal(last_point,current_point,next_point,true))
 				st.set_uv(Vector2(0, 0))
-				st.add_vertex(run_pipeline(Vector3(x, 0, z+1),pipeline))
-
-				st.set_normal(Vector3(0, 0, 1))
-				st.set_uv(Vector2(0, 1))
-				st.add_vertex(run_pipeline(Vector3(x+1, 0, z+1),pipeline))
-			
+				st.add_vertex(next_point)
+				last_point = current_point
+				current_point = next_point
+				
+				
+				next_point = run_pipeline(Vector3(x, 0, z+1),pipeline)
+				st.set_normal(get_triangle_normal(last_point,current_point,next_point,true))
+				st.set_uv(Vector2(0, 0))
+				st.add_vertex(next_point)
+				last_point = current_point
+				current_point = next_point
+				
+				
+				next_point = run_pipeline(Vector3(x+1, 0, z+1),pipeline)
+				st.set_normal(get_triangle_normal(last_point,current_point,next_point))
+				st.set_uv(Vector2(0, 0))
+				st.add_vertex(next_point)
+				last_point = current_point
+				current_point = next_point
+		alternate_alignment=!alternate_alignment
 	# Commit changes to a mesh.
 	st.generate_tangents()
-	st.generate_normals()
 	mesh = st.commit()
 	
 #add the amplitude of a sin wave to the y height of the current coorindate, multiplied by amplitude, accounting for the angle of the wave
@@ -158,3 +183,16 @@ func apply_pointy_sin_wave(grid_pos, wave_amplitude = 1 , wave_frequency = 1, wa
 #for rotated waves, apply a rotation to the x coordinate that is being calculated for
 func calculate_angular_shift(x_pos,roation_deg):
 	return x_pos*tanh(deg_to_rad(roation_deg))
+
+func calculate_normal(pos1,pos2) -> Vector3:
+	return pos1.cross(pos2)
+	
+func get_triangle_normal(a, b, c,flip=false):
+	# Find the surface normal given 3 vertices.
+	var side1 = b - a
+	var side2 = c - a
+	var normal = side1.cross(side2)
+	if !flip:
+		return normal
+	else:
+		return -normal
