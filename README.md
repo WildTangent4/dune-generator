@@ -1,4 +1,4 @@
-# Generating sand dunes proceduraly in godot
+# Generating sand dunes proceduraly in Godot 4.3
 <img width="518" alt="dunes" src="https://github.com/user-attachments/assets/0cbd4868-a5cd-4e5f-aa19-0c0780b14a3d">
 
 ## Mesh structure
