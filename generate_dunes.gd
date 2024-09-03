@@ -21,14 +21,17 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	var cellular_noise = FastNoiseLite.new()
 	cellular_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH #(just curious about outputs)
 	cellular_noise.seed = 1
-	cellular_noise.frequency = 0.05
+	cellular_noise.frequency = 0.005
 	cellular_noise.fractal_octaves = 1
 	cellular_noise.fractal_gain = 1
-	print(cellular_noise.get_noise_2d(1,1))
 	var pipeline = [
 		#func (pos): return apply_vertical_shift(pos,-1),#hardcode values here to customise the pipeline
-		#func (pos): return apply_noise(pos,cellular_noise,2),
-		func (pos): return apply_sin(pos,10,0.05,45)
+		func (pos): return apply_noise(pos,cellular_noise,2),
+		func (pos): return apply_sin(pos,1,0.2,45),
+		func (pos): return apply_sin(pos,1,0.3,20),
+		func (pos): return apply_sin(pos,4,0.1,0),
+		func (pos): return apply_sin(pos,0.2,0.6,63),
+		func (pos): return apply_sin(pos,0.1,1,35),
 		]
 	
 	
@@ -69,6 +72,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 			
 	# Commit changes to a mesh.
 	st.generate_tangents()
+	st.generate_normals()
 	mesh = st.commit()
 	
 #add the amplitude of a sin wave to the y height of the current coorindate, multiplied by amplitude, accounting for the angle of the wave
