@@ -14,11 +14,10 @@ func _process(delta: float) -> void:
 func init_mesh():
 	
 	var vertices = PackedVector3Array()
-	create_base_mesh(5,5,vertices,0)
+	create_base_mesh(100,100,vertices,0)
 
 #add x * z points to a packed vector 3 array to make a flat plane
 func create_base_mesh(x_max,z_max,array,y_coordinate=0):
-	x_max = x_max+1 # need to create one more edge than the requested number of squares to ensure the final sqaure is complete
 	var cellular_noise = FastNoiseLite.new()
 	cellular_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH #(just curious about outputs)
 	cellular_noise.seed = 1
@@ -41,7 +40,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	
 	for z in z_max:
 		if z%2==0:
-			for x in range(x_max,-1,-1):
+			for x in range(x_max,-1,-1): #in the range() function, first parameter is inclusive and the second is exclusive, so we use -1 to get the correct range
 				st.set_normal(Vector3(0, 0, 1))
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
@@ -51,7 +50,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 				st.add_vertex(run_pipeline(Vector3(x, 0, z+1),pipeline))
 		else:
 			for x in range(0,x_max,1):
-				#note, this has to be done this way to ensure that the generated triangles face upwards by forcing a clocwise winding order
+				#note, this has to be done this way to ensure that the generated triangles face upwards by forcing a clockwise winding order
 				st.set_normal(Vector3(0, 0, 1))
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
