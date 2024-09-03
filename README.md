@@ -15,8 +15,8 @@ After the next position is generated, the normal for the last triangle created i
 ## Known issues
 [x] Jagged edges to terrain (https://github.com/WildTangent4/dune-generator/issues/1#issue-2503473239)
 
-[ ] Normals have "banding" effect
+[ ] Normals have "banding" effect (https://github.com/WildTangent4/dune-generator/issues/2#issue-2503515179)
 
-[ ] Performance is poor when working with large grid sizes
+[ ] Performance is poor when working with large grid sizes (https://github.com/WildTangent4/dune-generator/issues/3#issue-2503519969)
 
-[ ] Repetition is noticable at larger grid sizes
+[ ] Repetition is noticable at larger grid sizes (https://github.com/WildTangent4/dune-generator/issues/4#issue-2503527636)
