@@ -40,9 +40,8 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	st.begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
 	
 	for z in z_max:
-		if z%2==0:
-			for x in range(x_max,-1,-1):
-				print(x)
+		if z%2==0:#even (works)
+			for x in range(x_max,0,-1):
 				st.set_normal(Vector3(0, 0, 1))
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
@@ -51,20 +50,27 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 				st.set_uv(Vector2(0, 1))
 				st.add_vertex(run_pipeline(Vector3(x, 0, z+1),pipeline))
 		else:
-			for x in x_max:
-				print(x)
+			for x in range(0,x_max,1):
+				st.set_normal(Vector3(0, 0, 1))
+				st.set_uv(Vector2(0, 0))
+				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
+
+				st.set_normal(Vector3(0, 0, 1))
+				st.set_uv(Vector2(0, 1))
+				st.add_vertex(run_pipeline(Vector3(x+1, 0, z),pipeline))
+				
 				st.set_normal(Vector3(0, 0, 1))
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(run_pipeline(Vector3(x, 0, z+1),pipeline))
 
 				st.set_normal(Vector3(0, 0, 1))
 				st.set_uv(Vector2(0, 1))
-				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
+				st.add_vertex(run_pipeline(Vector3(x+1, 0, z+1),pipeline))
 			
 	# Commit changes to a mesh.
 	st.generate_tangents()
 	mesh = st.commit()
-
+	
 #add the amplitude of a sin wave to the y height of the current coorindate, multiplied by amplitude, accounting for the angle of the wave
 func apply_sin(grid_pos, wave_amplitude = 1 , wave_frequency = 1, wave_angle = 45) -> Vector3:
 	return Vector3(
