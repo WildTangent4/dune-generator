@@ -81,36 +81,23 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 		else:
 			for x in range(0,x_max,1):
 				#note, this has to be done this way to ensure that the generated triangles face upwards by forcing a clockwise winding order
-				next_point = run_pipeline(Vector3(x, 0, z),pipeline)
-				st.set_normal(get_triangle_normal(last_point,current_point,next_point))
+				next_point = run_pipeline(Vector3(x, 0, z+1),pipeline)
+				st.set_normal(get_triangle_normal(next_point,current_point,last_point))
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(next_point)
 				last_point = current_point
 				current_point = next_point
 
 				
-				next_point = run_pipeline(Vector3(x+1, 0, z),pipeline)
-				st.set_normal(get_triangle_normal(last_point,current_point,next_point,true))
+				next_point = run_pipeline(Vector3(x, 0, z),pipeline)
+				st.set_normal(get_triangle_normal(next_point,current_point,last_point,true))#last_point,current_point,next_point
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(next_point)
 				last_point = current_point
 				current_point = next_point
 				
 				
-				next_point = run_pipeline(Vector3(x, 0, z+1),pipeline)
-				st.set_normal(get_triangle_normal(last_point,current_point,next_point,true))
-				st.set_uv(Vector2(0, 0))
-				st.add_vertex(next_point)
-				last_point = current_point
-				current_point = next_point
 				
-				
-				next_point = run_pipeline(Vector3(x+1, 0, z+1),pipeline)
-				st.set_normal(get_triangle_normal(last_point,current_point,next_point))
-				st.set_uv(Vector2(0, 0))
-				st.add_vertex(next_point)
-				last_point = current_point
-				current_point = next_point
 		alternate_alignment=!alternate_alignment
 	# Commit changes to a mesh.
 	st.generate_tangents()
