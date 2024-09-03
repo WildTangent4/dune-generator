@@ -11,7 +11,7 @@ After the next position is generated, the normal for the last triangle created i
 <img width="538" alt="normal buffer" src="https://github.com/user-attachments/assets/caecb2d2-b3de-4185-89cd-ee51513dd994">
 
 ## Known issues
-[ ] Jagged edges to terrain
+[ ] Jagged edges to terrain (https://github.com/WildTangent4/dune-generator/issues/1#issue-2503473239)
 
 [ ] Normals have "banding" effect
 
