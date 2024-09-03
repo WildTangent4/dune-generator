@@ -18,21 +18,36 @@ func init_mesh():
 
 #add x * z points to a packed vector 3 array to make a flat plane
 func create_base_mesh(x_max,z_max,array,y_coordinate=0):
-	var cellular_noise = FastNoiseLite.new()
-	cellular_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH #(just curious about outputs)
-	cellular_noise.seed = 1
-	cellular_noise.frequency = 0.005
-	cellular_noise.fractal_octaves = 1
-	cellular_noise.fractal_gain = 1
+	var general_noise_map = FastNoiseLite.new()
+	general_noise_map.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	general_noise_map.seed = 1
+	general_noise_map.frequency = 0.005
+	general_noise_map.fractal_octaves = 1
+	general_noise_map.fractal_gain = 1
+	
+	var dune_noise_map = FastNoiseLite.new()
+	dune_noise_map.noise_type = FastNoiseLite.TYPE_CELLULAR
+	dune_noise_map.seed = 2
+	dune_noise_map.frequency = 0.005
+	dune_noise_map.fractal_octaves = 3
+	dune_noise_map.fractal_gain = 2
+	
+	var biome_noise_map = FastNoiseLite.new()
+	biome_noise_map.noise_type = FastNoiseLite.TYPE_CELLULAR
+	biome_noise_map.seed = 2
+	biome_noise_map.frequency = 0.01
+	biome_noise_map.fractal_octaves = 3
+	biome_noise_map.fractal_gain = 1
 	var pipeline = [
-		#func (pos): return apply_vertical_shift(pos,-1),#hardcode values here to customise the pipeline
-		func (pos): return apply_noise(pos,cellular_noise,2),
+		func (pos): return apply_vertical_shift(pos,8),
+		func (pos): return apply_noise(pos,biome_noise_map,20),
 		func (pos): return apply_sin(pos,1,0.2,45),
 		func (pos): return apply_sin(pos,1,0.3,20),
 		func (pos): return apply_sin(pos,4,0.1,0),
-		func (pos): return apply_sin(pos,0.2,0.6,63),
+		func (pos): return apply_sin(pos,4,0.1,30),
+		func (pos): return apply_sin(pos,0.2,0.6,63), #Smaller sin waves with high frequencies give the appearance of water
 		func (pos): return apply_sin(pos,0.1,1,35),
-		func (pos): return apply_clamp(pos,-3,0.9),
+		func (pos): return apply_clamp(pos,0,0.8),
 		]
 	
 	
@@ -110,6 +125,7 @@ func run_pipeline(coordinate,pipeline = []) -> Vector3:
 	return coordinate #warning no error handling if returns nil
 
 # moves positions below the threshold value towards the value, proportional to distance from the desired height
+#TODO: create variant of this function that applies the clamp relative to the weight on a noise map (simulating biomes)
 func apply_clamp(grid_pos, threshold, clamping_force):
 	if grid_pos.y<threshold:
 		grid_pos = Vector3(
@@ -118,7 +134,27 @@ func apply_clamp(grid_pos, threshold, clamping_force):
 		grid_pos.z
 		)
 	return grid_pos
-	
+
+#normal clamp function, but uses the noise map provided as a mask to calculate clamping force
+func apply_noise_based_clamp(grid_pos, threshold, noise):
+	if grid_pos.y<threshold:
+		var clamping_force = noise.get_noise_2d(grid_pos.x,grid_pos.z)
+		grid_pos = Vector3(
+		grid_pos.x,
+		grid_pos.y+ ((threshold-grid_pos.y)*clamping_force),
+		grid_pos.z
+		)
+	return grid_pos
+
+func apply_pointy_sin_wave(grid_pos, wave_amplitude = 1 , wave_frequency = 1, wave_angle = 45, shift = 1) -> Vector3:
+	shift = shift + calculate_angular_shift(grid_pos.z,wave_angle)
+	var power = 3
+	return Vector3(
+		grid_pos.x,
+		grid_pos.y+(pow(sin((grid_pos.x + shift) * wave_frequency),power) * wave_amplitude),
+		grid_pos.z
+		)
+
 #for rotated waves, apply a rotation to the x coordinate that is being calculated for
 func calculate_angular_shift(x_pos,roation_deg):
 	return x_pos*tanh(deg_to_rad(roation_deg))
