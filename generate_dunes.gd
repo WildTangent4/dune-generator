@@ -40,8 +40,8 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	st.begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
 	
 	for z in z_max:
-		if z%2==0:#even (works)
-			for x in range(x_max,0,-1):
+		if z%2==0:
+			for x in range(x_max,-1,-1):
 				st.set_normal(Vector3(0, 0, 1))
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
@@ -51,6 +51,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 				st.add_vertex(run_pipeline(Vector3(x, 0, z+1),pipeline))
 		else:
 			for x in range(0,x_max,1):
+				#note, this has to be done this way to ensure that the generated triangles face upwards by forcing a clocwise winding order
 				st.set_normal(Vector3(0, 0, 1))
 				st.set_uv(Vector2(0, 0))
 				st.add_vertex(run_pipeline(Vector3(x, 0, z),pipeline))
