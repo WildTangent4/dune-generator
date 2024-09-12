@@ -14,7 +14,7 @@ func _process(delta: float) -> void:
 func init_mesh():
 	
 	var vertices = PackedVector3Array()
-	create_base_mesh(100,100,vertices,0)
+	create_base_mesh(300,300,vertices,0)
 
 #add x * z points to a packed vector 3 array to make a flat plane
 func create_base_mesh(x_max,z_max,array,y_coordinate=0):
@@ -26,7 +26,7 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	general_noise_map.fractal_gain = 1
 	
 	var dune_noise_map = FastNoiseLite.new()
-	dune_noise_map.noise_type = FastNoiseLite.TYPE_CELLULAR
+	dune_noise_map.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	dune_noise_map.seed = 2
 	dune_noise_map.frequency = 0.005
 	dune_noise_map.fractal_octaves = 3
@@ -39,17 +39,18 @@ func create_base_mesh(x_max,z_max,array,y_coordinate=0):
 	biome_noise_map.fractal_octaves = 4
 	biome_noise_map.fractal_gain = 1
 	var pipeline = [
-		func (pos): return apply_vertical_shift(pos,8),
-		func (pos): return apply_sin(pos,10,0.01,80),
-		func (pos): return apply_sin(pos,4,0.1,0),
-		func (pos): return apply_sin(pos,4,0.1,30),
-		func (pos): return apply_sin(pos,1,0.2,45),
-		func (pos): return apply_sin(pos,1,0.3,20),
-		func (pos): return apply_sin(pos,0.2,0.6,63), #Smaller sin waves with high frequencies give the appearance of water
-		func (pos): return apply_sin(pos,0.1,1,35),
-		func (pos): return apply_noise_based_clamp(pos,-2,dune_noise_map),
+		func (pos): return apply_sin_shifting_angle(pos,dune_noise_map,1000)
+		#func (pos): return apply_vertical_shift(pos,8),
+		#func (pos): return apply_sin(pos,10,0.01,80),
+		#func (pos): return apply_sin(pos,4,0.1,0),
+		#func (pos): return apply_sin(pos,4,0.1,30),
+		#func (pos): return apply_sin(pos,1,0.2,45),
+		#func (pos): return apply_sin(pos,1,0.3,20),
+		#func (pos): return apply_sin(pos,0.2,0.6,63), #Smaller sin waves with high frequencies give the appearance of water
+		#func (pos): return apply_sin(pos,0.1,1,35),
+		#func (pos): return apply_noise_based_clamp(pos,-2,dune_noise_map),
 		#func (pos): return apply_noise(pos,dune_noise_map,20),
-		func (pos): return apply_clamp(pos,-6,0.8),
+		#func (pos): return apply_clamp(pos,-6,0.8),
 		]
 	
 	
@@ -112,6 +113,14 @@ func apply_sin(grid_pos, wave_amplitude = 1 , wave_frequency = 1, wave_angle = 4
 	return Vector3(
 		grid_pos.x,
 		grid_pos.y+(sin((grid_pos.x + shift) * wave_frequency) * wave_amplitude),
+		grid_pos.z
+		)
+
+func apply_sin_shifting_angle(grid_pos, noise_map, noise_amplitude = 45, wave_amplitude = 1 , wave_frequency = 1) -> Vector3:
+	var shift = tanh(deg_to_rad(noise_map.get_noise_2d(grid_pos.x,grid_pos.z))) * noise_amplitude
+	return Vector3(
+		grid_pos.x,
+		grid_pos.y+(sin((grid_pos.z + shift) * wave_frequency) * wave_amplitude),
 		grid_pos.z
 		)
 
